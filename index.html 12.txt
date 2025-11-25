@@ -1,0 +1,122 @@
+<!-- index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login — Example</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="login-card" aria-labelledby="login-heading">
+      <h1 id="login-heading" class="brand">MySite</h1>
+
+      <form id="loginForm" class="form" action="/login" method="POST" novalidate>
+        <!-- Email -->
+        <label for="email" class="label">Email</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          class="input"
+          placeholder="you@example.com"
+          required
+          autocomplete="email"
+        />
+        <p class="error" id="emailError" aria-live="polite"></p>
+
+        <!-- Password -->
+        <label for="password" class="label">Password</label>
+        <div class="password-row">
+          <input
+            id="password"
+            name="password"
+            type="password"
+            class="input"
+            placeholder="Enter your password"
+            minlength="6"
+            required
+            autocomplete="current-password"
+          />
+          <button type="button" id="togglePwd" class="toggle-btn" aria-label="Show password">
+            👁
+          </button>
+        </div>
+        <p class="error" id="passwordError" aria-live="polite"></p>
+
+        <div class="row-between">
+          <label class="checkbox-label">
+            <input type="checkbox" name="remember" /> Remember me
+          </label>
+          <a class="link" href="/forgot-password">Forgot?</a>
+        </div>
+
+        <button type="submit" class="btn primary">Sign in</button>
+
+        <div class="hr"><span>or</span></div>
+
+        <button type="button" class="btn ghost" id="demoBtn">Sign in with Demo</button>
+
+        <p class="small">Don't have an account? <a href="/register" class="link">Register</a></p>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    // Small client-side JS: toggle password visibility + basic validation
+    (function () {
+      const form = document.getElementById('loginForm');
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
+      const emailError = document.getElementById('emailError');
+      const passwordError = document.getElementById('passwordError');
+      const toggleBtn = document.getElementById('togglePwd');
+      const demoBtn = document.getElementById('demoBtn');
+
+      toggleBtn.addEventListener('click', () => {
+        const isPwd = password.type === 'password';
+        password.type = isPwd ? 'text' : 'password';
+        toggleBtn.setAttribute('aria-label', isPwd ? 'Hide password' : 'Show password');
+        toggleBtn.textContent = isPwd ? '🙈' : '👁';
+      });
+
+      function validate() {
+        let ok = true;
+        emailError.textContent = '';
+        passwordError.textContent = '';
+
+        if (!email.checkValidity()) {
+          emailError.textContent = email.validity.valueMissing ? 'Email is required.' : 'Please enter a valid email.';
+          ok = false;
+        }
+
+        if (!password.checkValidity()) {
+          if (password.validity.valueMissing) passwordError.textContent = 'Password is required.';
+          else if (password.validity.tooShort) passwordError.textContent = 'Password must be at least 6 characters.';
+          else passwordError.textContent = 'Invalid password.';
+          ok = false;
+        }
+
+        return ok;
+      }
+
+      form.addEventListener('submit', (e) => {
+        if (!validate()) {
+          e.preventDefault();
+          // set focus to the first invalid field for accessibility
+          if (emailError.textContent) email.focus();
+          else if (passwordError.textContent) password.focus();
+        }
+        // If valid: the form will POST to /login (server must handle it).
+      });
+
+      // optional demo button: prefill (for local testing)
+      demoBtn.addEventListener('click', () => {
+        email.value = 'demo@example.com';
+        password.value = 'demopassword';
+      });
+    })();
+  </script>
+</body>
+</html>
